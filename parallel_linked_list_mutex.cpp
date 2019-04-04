@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
         long difference = n-test_sample_size;
         if (labs(difference) < 4) {
             cout << "Mean time taken for parallel operation using mutexes: " << x_bar << "\n";   
-            cout << "STD for serial operation : " << standard_dev << "\n";   
+            cout << "STD for parallel operation using mutexes : " << standard_dev << "\n";   
             cout << "Sample size : " << test_sample_size << "\n";
             break;
         } else {
