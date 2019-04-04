@@ -4,6 +4,8 @@
 #include <iostream>
 #include <math.h>
 
+#define MAX_VAL 50000
+
 using namespace std;
 
 // List node object struct.
@@ -95,14 +97,14 @@ int main(int argc, char *argv[]) {
         double standard_dev = calc_std(test_sample_size, time_squard_sum, x_bar);
         n = calc_n(x_bar, standard_dev);
         long difference = n-test_sample_size;
-        if (labs(difference) < 2) {
+        if (labs(difference) < 4) {
             cout << "Mean time taken for parallel operation using RW locks: " << x_bar << "\n";   
             cout << "STD for serial operation : " << standard_dev << "\n";   
             cout << "Sample size : " << test_sample_size << "\n";
             break;
         } else {
-            if (n == 0 || n == 1) {
-                test_sample_size = 2;
+            if (n < 3) {
+                test_sample_size = 3;
             } else {
                 test_sample_size = n;
             }
@@ -189,7 +191,7 @@ int gen_rand_list(int size) {
     int count = 0;
     srand((unsigned) time(0));
     while(count<size) {
-        if (insert(rand()%50000, &head_p)==1) {
+        if (insert(rand()%MAX_VAL, &head_p)==1) {
             count++;
         }
     }
@@ -207,17 +209,17 @@ void *thread_routine(void* params) {
         operation = rand() % 3;
         if (operation == 0 && mem_samples>0) {
             pthread_rwlock_rdlock(linked_list_rwlock);
-            memeber(rand()%50000, head_p);
+            memeber(rand()%MAX_VAL, head_p);
             pthread_rwlock_unlock(linked_list_rwlock);
             mem_samples--;
         } else if (operation == 1 && insert_samples>0) {
             pthread_rwlock_wrlock(linked_list_rwlock);
-            insert(rand()%50000, &head_p);
+            insert(rand()%MAX_VAL, &head_p);
             pthread_rwlock_unlock(linked_list_rwlock);
             insert_samples--;
         } else if (delete_samples>0){
             pthread_rwlock_wrlock(linked_list_rwlock);
-            delete_node(rand()%50000, &head_p);
+            delete_node(rand()%MAX_VAL, &head_p);
             pthread_rwlock_unlock(linked_list_rwlock);
             delete_samples--;
         }

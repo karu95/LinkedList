@@ -4,6 +4,8 @@
 #include <iostream>
 #include <math.h>
 
+#define MAX_VAL 50000
+
 using namespace std;
 
 // List node object struct.
@@ -70,7 +72,6 @@ int main(int argc, char *argv[]) {
         double time_squard_sum = 0.0;
 
         for (int i = 0; i < test_sample_size; i++) {
-            //head_p = NULL;
             gen_rand_list(list_size);
             pthread_t *thread_handles;
             thread_handles = (pthread_t*) malloc(thread_count*sizeof(pthread_t));
@@ -92,14 +93,14 @@ int main(int argc, char *argv[]) {
         double standard_dev = calc_std(test_sample_size, time_squard_sum, x_bar);
         n = calc_n(x_bar, standard_dev);
         long difference = n-test_sample_size;
-        if (labs(difference) < 2) {
+        if (labs(difference) < 4) {
             cout << "Mean time taken for parallel operation using mutexes: " << x_bar << "\n";   
             cout << "STD for serial operation : " << standard_dev << "\n";   
             cout << "Sample size : " << test_sample_size << "\n";
             break;
         } else {
-            if (n == 0 || n == 1) {
-                test_sample_size = 2;
+            if (n < 3) {
+                test_sample_size = 3;
             } else {
                 test_sample_size = n;
             }
@@ -186,7 +187,7 @@ int gen_rand_list(int size) {
     int count = 0;
     srand((unsigned) time(0));
     while(count<size) {
-        if (insert(rand()%50000, &head_p)==1) {
+        if (insert(rand()%MAX_VAL, &head_p)==1) {
             count++;
         }
     }
@@ -206,17 +207,17 @@ void *thread_routine(void* params) {
         operation = rand() % 3;
         if (operation == 0 && mem_samples>0) {
             pthread_mutex_lock(&list_mutex);
-            memeber(rand()%50000, head_p);
+            memeber(rand()%MAX_VAL, head_p);
             pthread_mutex_unlock(&list_mutex);
             mem_samples--;
         } else if (operation == 1 && insert_samples>0) {
             pthread_mutex_lock(&list_mutex);
-            insert(rand()%50000, &head_p);
+            insert(rand()%MAX_VAL, &head_p);
             pthread_mutex_unlock(&list_mutex);
             insert_samples--;
         } else if (delete_samples>0){
             pthread_mutex_lock(&list_mutex);
-            delete_node(rand()%50000, &head_p);
+            delete_node(rand()%MAX_VAL, &head_p);
             pthread_mutex_unlock(&list_mutex);
             delete_samples--;
         }
@@ -240,7 +241,6 @@ void free_list(struct list_node_s **head_pp) {
     free(curr_p);
     *head_pp = NULL;
 }
-
 
 int is_Empty(struct list_node_s *head_p) {
     if (head_p == NULL)

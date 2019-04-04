@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     double delete_percentage = strtod(argv[4], NULL);
     double insert_percentage = strtod(argv[5], NULL);
     
-    long test_sample_size = 10;
+    long test_sample_size = 15;
     long n;
 
     while(true) {
@@ -63,9 +63,6 @@ int main(int argc, char *argv[]) {
         double x_bar = calc_mean(test_sample_size, time_sum); 
         double standard_dev = calc_std(test_sample_size, time_squard_sum, x_bar);
         n = calc_n(x_bar, standard_dev);
-        // cout << "For a given test sample of size : " << test_sample_size << "\n" 
-        // << "STD : " << standard_dev << "\n" << "Mean : " << x_bar << "\n" <<
-        // "N value : " << n << endl;
         long difference = n-test_sample_size;
         if (labs(difference) < 4) {
             cout << "Mean time taken for serial operation : " << x_bar << "\n";   
@@ -73,8 +70,8 @@ int main(int argc, char *argv[]) {
             cout << "Sample size : " << test_sample_size << "\n";
             break;
         } else {
-            if (n == 0 || n == 1) {
-                test_sample_size = 2;
+            if (n < 3) {
+                test_sample_size = 3;
             } else {
                 test_sample_size = n;
             }
